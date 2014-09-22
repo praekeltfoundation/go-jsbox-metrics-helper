@@ -4,7 +4,7 @@
   "description": "Metrics helper for Vumi JS Sandbox apps",
   "main": "lib/index.js",
   "scripts": {
-    "test": "./utils/test.sh"
+    "test": "grunt test"
   },
   "repository": {
     "type": "git",
