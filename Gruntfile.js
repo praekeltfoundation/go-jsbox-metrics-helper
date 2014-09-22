@@ -6,19 +6,12 @@ module.exports = function (grunt) {
     grunt.initConfig({
         paths: {
             src: {
-                app: [
-                    'lib/metrics-helper.js'
-                ],
-                prd: [
-                    'lib/index.js',
-                    '<%= paths.src.app %>',
-                ],
                 all: [
                     'src/**/*.js'
                 ]
             },
             test: [
-                '<%= paths.src.app %>',
+                '<%= paths.src.all %>',
                 'test/**/*.js'
             ]
         },
