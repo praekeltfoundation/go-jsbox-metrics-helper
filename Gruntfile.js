@@ -5,13 +5,11 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         paths: {
-            src: {
-                all: [
-                    'src/**/*.js'
-                ]
-            },
+            src: [
+                'src/**/*.js'
+                ],
             test: [
-                '<%= paths.src.all %>',
+                '<%= paths.src %>',
                 'test/**/*.js'
             ]
         },
@@ -20,7 +18,7 @@ module.exports = function (grunt) {
             options: {jshintrc: '.jshintrc'},
             all: [
                 'Gruntfile.js',
-                '<%= paths.src.all %>',
+                '<%= paths.src %>',
                 '<%= paths.test %>'
             ]
         },
@@ -28,7 +26,7 @@ module.exports = function (grunt) {
         watch: {
             src: {
                 files: [
-                    '<%= paths.src.all %>',
+                    '<%= paths.src %>',
                     '<%= paths.test %>'
                 ],
                 tasks: ['default'],
