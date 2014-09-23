@@ -90,16 +90,6 @@ describe('MetricsHelper', function() {
 
     describe('when a new session is started', function() {
 
-        it('should display the first state text', function() {
-            return tester
-                .start()
-                .check.interaction({
-                    state: 'states:test',
-                    reply: 'This is the end state.'
-                })
-                .run();
-        });
-
         it('should fire the totalSessions metric', function() {
             return tester
                 .start()
