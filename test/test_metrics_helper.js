@@ -4,7 +4,6 @@ var AppTester = vumigo.AppTester;
 var EndState = vumigo.states.EndState;
 var MetricsHelper = require('../lib');
 var assert = require('assert');
-//var Q = require('q');
 
 describe('MetricsHelper', function() {
     var app;
