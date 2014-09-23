@@ -18,7 +18,9 @@ describe('MetricsHelper', function() {
             metricsH = new MetricsHelper(app.im);
             metricsH
                 .add.totalUniqueUsers('uniqueUsers')
-                .add.totalUniqueUsers('uniqueUsers2');
+                .add.totalUniqueUsers('uniqueUsers2')
+                .add.totalSessions('sessions')
+                .add.totalSessions('sessions2');
        };
 
         app.states.add('states:test', function(name) {
@@ -88,11 +90,72 @@ describe('MetricsHelper', function() {
                 .setup.user({addr: '+271234', state:'states:test'})
                 .start()
                 .check(function(api, im , app) {
-                    metrics = api.metrics.stores;
-                    assert.deepEqual(metrics, []);
+                    metrics = api.metrics.stores['metricsHelper-tester'];
+                    assert.deepEqual(metrics.uniqueUsers, null);
                 })
                 .run();
         });
 
     });
+
+    describe('when a new session is started', function() {
+
+        it('should display the first state text', function() {
+            return tester
+                .start()
+                .check.interaction({
+                    state: 'states:test',
+                    reply: 'This is the end state.'
+                })
+                .run();
+        });
+
+        it('should fire the totalSessions metric', function() {
+            return tester
+                .start()
+                .check(function(api, im , app) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].sessions;
+                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1 ]});
+                })
+                .run();
+        });
+
+        it('should fire both totalSessions metrics', function() {
+            return tester
+                .start()
+                .check(function(api, im, app) {
+                    metric1 = api.metrics
+                        .stores['metricsHelper-tester'].sessions;
+                    metric2 = api.metrics
+                        .stores['metricsHelper-tester'].sessions2;
+                    assert.deepEqual(metric1, {agg: 'sum', values: [ 1 ]});
+                    assert.deepEqual(metric2, {agg: 'sum', values: [ 1 ]});
+                })
+                .run();
+        });
+
+        it('should fire the metric for each new session', function() {
+            return tester
+                .inputs(null, null)
+                .check(function(api, im, app) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].sessions;
+                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1, 1 ]});
+                })
+                .run();
+        });
+
+        it('should not fire when resuming a session', function() {
+            return tester
+                .input('resume')
+                .check(function(api, im, app) {
+                    metrics = api.metrics.stores['metricsHelper-tester'];
+                    assert.deepEqual(metrics.sessions, null);
+                })
+                .run();
+        });
+
+    });
+
 });
