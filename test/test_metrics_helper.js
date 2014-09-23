@@ -17,8 +17,8 @@ describe('MetricsHelper', function() {
         app.init = function() {
             metricsH = new MetricsHelper(app.im);
             metricsH
-                .add.totalUniqueUsers('uniqueUsers')
-                .add.totalUniqueUsers();
+                .add.total_unique_users('uniqueUsers')
+                .add.total_unique_users();
        };
 
         app.states.add('states:test', function(name) {
