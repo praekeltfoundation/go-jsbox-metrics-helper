@@ -6,7 +6,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         paths: {
             src: [
-                'src/**/*.js'
+                'lib/**/*.js',
                 ],
             test: [
                 '<%= paths.src %>',
