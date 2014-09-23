@@ -15,6 +15,13 @@ describe('MetricsHelper', function() {
         app = new App('states:test');
         tester = new AppTester(app);
 
+        app.init = function() {
+            metricsH = new MetricsHelper(app.im);
+            metricsH
+                .add.totalUniqueUsers('uniqueUsers')
+                .add.totalUniqueUsers('uniqueUsers2');
+       };
+
         app.states.add('states:test', function(name) {
             return new EndState(name, {
                 text: 'This is the end state.'
@@ -28,12 +35,6 @@ describe('MetricsHelper', function() {
     });
 
     describe('When a new user accesses the service', function() {
-        beforeEach(function() {
-            metricsH = new MetricsHelper(app.im);
-            metricsH
-                .add.totalUniqueUsers('uniqueUsers')
-                .add.totalUniqueUsers('uniqueUsers2');
-        });
 
         it('should display the first state text', function() {
             return tester
@@ -66,6 +67,19 @@ describe('MetricsHelper', function() {
                         .stores['metricsHelper-tester'].uniqueUsers2;
                     assert.deepEqual(metrics1, {agg: 'sum', values: [ 1 ]});
                     assert.deepEqual(metrics2, {agg: 'sum', values: [ 1 ]});
+                })
+                .run();
+        });
+
+        it('should fire the metric for each new user', function() {
+            return tester
+                .inputs(
+                    {from_addr: '+271234', content: null},
+                    {from_addr: '+274321', content: null})
+                .check(function(api, im , app) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].uniqueUsers;
+                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1, 1 ]});
                 })
                 .run();
         });
