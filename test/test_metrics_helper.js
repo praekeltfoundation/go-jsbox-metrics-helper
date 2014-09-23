@@ -91,7 +91,7 @@ describe('MetricsHelper', function() {
                 .start()
                 .check(function(api, im , app) {
                     metrics = api.metrics.stores['metricsHelper-tester'];
-                    assert.deepEqual(metrics.uniqueUsers, null);
+                    assert.equal(metrics.uniqueUsers, undefined);
                 })
                 .run();
         });
@@ -151,7 +151,7 @@ describe('MetricsHelper', function() {
                 .input('resume')
                 .check(function(api, im, app) {
                     metrics = api.metrics.stores['metricsHelper-tester'];
-                    assert.deepEqual(metrics.sessions, null);
+                    assert.equal(metrics.sessions, undefined);
                 })
                 .run();
         });
