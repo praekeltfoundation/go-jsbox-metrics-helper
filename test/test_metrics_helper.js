@@ -35,16 +35,6 @@ describe('MetricsHelper', function() {
 
     describe('When a new user accesses the service', function() {
 
-        it('should display the first state text', function() {
-            return tester
-                .start()
-                .check.interaction({
-                    state: 'states:test',
-                    reply: 'This is the end state.'
-                })
-                .run();
-        });
-
         it('should fire the new user metrics', function() {
             return tester
                 .start()
