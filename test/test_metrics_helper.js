@@ -17,10 +17,10 @@ describe('MetricsHelper', function() {
         app.init = function() {
             metricsH = new MetricsHelper(app.im);
             metricsH
-                .add.totalUniqueUsers('uniqueUsers')
-                .add.totalUniqueUsers('uniqueUsers2')
-                .add.totalSessions('sessions')
-                .add.totalSessions('sessions2');
+                .add.total_unique_users('uniqueUsers')
+                .add.total_unique_users()
+                .add.total_sessions('sessions')
+                .add.total_sessions('sessions2');
        };
 
         app.states.add('states:test', function(name) {
@@ -65,7 +65,7 @@ describe('MetricsHelper', function() {
                     metrics1 = api.metrics
                         .stores['metricsHelper-tester'].uniqueUsers;
                     metrics2 = api.metrics
-                        .stores['metricsHelper-tester'].uniqueUsers2;
+                        .stores['metricsHelper-tester'].unique_users;
                     assert.deepEqual(metrics1, {agg: 'sum', values: [ 1 ]});
                     assert.deepEqual(metrics2, {agg: 'sum', values: [ 1 ]});
                 })
