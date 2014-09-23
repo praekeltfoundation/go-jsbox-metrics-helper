@@ -15,20 +15,6 @@ describe('MetricsHelper', function() {
         app = new App('states:test');
         tester = new AppTester(app);
 
-        app.init = function() {
-            metricsH = new MetricsHelper(app.im);
-            return metricsH
-                .add.total_unique_users('uniqueUsers')
-                .add.total_unique_users()
-                .add.total_sessions('sessions')
-                .add.total_sessions()
-                .add.total_sessions('sessions2')
-                .add.total_state_entries('states:test', 'entries')
-                .add.total_state_entries('states:test')
-                .add.total_state_exits('states:test', 'exits')
-                .add.total_state_exits('states:test');
-       };
-
         app.states.add('states:test', function(name) {
             return new FreeText(name, {
                 question: 'This is the first state.',
@@ -51,13 +37,22 @@ describe('MetricsHelper', function() {
 
     describe('When a new user accesses the service', function() {
 
+        beforeEach(function() {
+            app.init = function() {
+                metricsH = new MetricsHelper(app.im);
+                metricsH
+                    .add.total_unique_users('uniqueUsers')
+                    .add.total_unique_users();
+            };
+        });
+
         it('should fire the new user metrics', function() {
             return tester
                 .start()
                 .check(function(api, im , app) {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].uniqueUsers;
-                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1 ]});
+                    assert.deepEqual(metrics, {agg: 'last', values: [ 1 ]});
                 })
                 .run();
         });
@@ -70,8 +65,8 @@ describe('MetricsHelper', function() {
                         .stores['metricsHelper-tester'].uniqueUsers;
                     metrics2 = api.metrics
                         .stores['metricsHelper-tester'].unique_users;
-                    assert.deepEqual(metrics1, {agg: 'sum', values: [ 1 ]});
-                    assert.deepEqual(metrics2, {agg: 'sum', values: [ 1 ]});
+                    assert.deepEqual(metrics1, {agg: 'last', values: [ 1 ]});
+                    assert.deepEqual(metrics2, {agg: 'last', values: [ 1 ]});
                 })
                 .run();
         });
@@ -84,7 +79,7 @@ describe('MetricsHelper', function() {
                 .check(function(api, im , app) {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].uniqueUsers;
-                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1, 1 ]});
+                    assert.deepEqual(metrics, {agg: 'last', values: [ 1, 2 ]});
                 })
                 .run();
         });
@@ -95,7 +90,7 @@ describe('MetricsHelper', function() {
                 .start()
                 .check(function(api, im , app) {
                     metrics = api.metrics.stores['metricsHelper-tester'];
-                    assert.equal(metrics.uniqueUsers, undefined);
+                    assert.equal(metrics, undefined);
                 })
                 .run();
         });
@@ -104,13 +99,22 @@ describe('MetricsHelper', function() {
 
     describe('when a new session is started', function() {
 
+        beforeEach(function() {
+            app.init = function() {
+                metricsH = new MetricsHelper(app.im);
+                metricsH
+                    .add.total_sessions('sessions')
+                    .add.total_sessions();
+            };
+        });
+
         it('should fire the sessions metric', function() {
             return tester
                 .start()
                 .check(function(api, im , app) {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].sessions;
-                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1 ]});
+                    assert.deepEqual(metrics, {agg: 'last', values: [ 1 ]});
                 })
                 .run();
         });
@@ -123,8 +127,8 @@ describe('MetricsHelper', function() {
                         .stores['metricsHelper-tester'].sessions;
                     metric2 = api.metrics
                         .stores['metricsHelper-tester'].total_sessions;
-                    assert.deepEqual(metric1, {agg: 'sum', values: [ 1 ]});
-                    assert.deepEqual(metric2, {agg: 'sum', values: [ 1 ]});
+                    assert.deepEqual(metric1, {agg: 'last', values: [ 1 ]});
+                    assert.deepEqual(metric2, {agg: 'last', values: [ 1 ]});
                 })
                 .run();
         });
@@ -135,7 +139,7 @@ describe('MetricsHelper', function() {
                 .check(function(api, im, app) {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].sessions;
-                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1, 1 ]});
+                    assert.deepEqual(metrics, {agg: 'last', values: [ 1, 2 ]});
                 })
                 .run();
         });
@@ -145,7 +149,7 @@ describe('MetricsHelper', function() {
                 .input('resume')
                 .check(function(api, im, app) {
                     metrics = api.metrics.stores['metricsHelper-tester'];
-                    assert.equal(metrics.sessions, undefined);
+                    assert.equal(metrics, undefined);
                 })
                 .run();
         });
@@ -153,6 +157,15 @@ describe('MetricsHelper', function() {
     });
 
     describe('when the state is entered', function() {
+
+        beforeEach(function() {
+            app.init = function() {
+                metricsH = new MetricsHelper(app.im);
+                metricsH
+                    .add.total_state_entries('states:test', 'entries')
+                    .add.total_state_entries('states:test');
+            };
+        });
 
         it('should trigger the state enter metric', function() {
             return tester
@@ -193,6 +206,15 @@ describe('MetricsHelper', function() {
     });
 
     describe('when the state is exited from', function() {
+
+        beforeEach(function() {
+            app.init = function() {
+                metricsH = new MetricsHelper(app.im);
+                metricsH
+                    .add.total_state_exits('states:test', 'exits')
+                    .add.total_state_exits('states:test');
+            };
+        });
 
         it('should trigger the state exit metric', function() {
             return tester
