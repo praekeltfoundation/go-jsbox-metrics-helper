@@ -20,7 +20,7 @@ describe('MetricsHelper', function() {
                 .add.total_unique_users('uniqueUsers')
                 .add.total_unique_users()
                 .add.total_sessions('sessions')
-                .add.total_sessions('sessions2');
+                .add.total_sessions();
        };
 
         app.states.add('states:test', function(name) {
@@ -90,7 +90,7 @@ describe('MetricsHelper', function() {
 
     describe('when a new session is started', function() {
 
-        it('should fire the totalSessions metric', function() {
+        it('should fire the sessions metric', function() {
             return tester
                 .start()
                 .check(function(api, im , app) {
@@ -101,14 +101,14 @@ describe('MetricsHelper', function() {
                 .run();
         });
 
-        it('should fire both totalSessions metrics', function() {
+        it('should fire both sessions metrics', function() {
             return tester
                 .start()
                 .check(function(api, im, app) {
                     metric1 = api.metrics
                         .stores['metricsHelper-tester'].sessions;
                     metric2 = api.metrics
-                        .stores['metricsHelper-tester'].sessions2;
+                        .stores['metricsHelper-tester'].total_sessions;
                     assert.deepEqual(metric1, {agg: 'sum', values: [ 1 ]});
                     assert.deepEqual(metric2, {agg: 'sum', values: [ 1 ]});
                 })
