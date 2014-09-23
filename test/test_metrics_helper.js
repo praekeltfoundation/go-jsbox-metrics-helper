@@ -2,6 +2,7 @@ var vumigo = require('vumigo_v02');
 var App = vumigo.App;
 var AppTester = vumigo.AppTester;
 var EndState = vumigo.states.EndState;
+var FreeText = vumigo.states.FreeText;
 var MetricsHelper = require('../lib');
 var assert = require('assert');
 
@@ -23,12 +24,14 @@ describe('MetricsHelper', function() {
                 .add.total_sessions()
                 .add.total_sessions('sessions2')
                 .add.total_state_entries('states:test', 'entries')
-                .add.total_state_entries('states:test');
+                .add.total_state_entries('states:test')
+                .add.total_state_exits('states:test', 'exits')
+                .add.total_state_exits('states:test');
        };
 
         app.states.add('states:test', function(name) {
-            return new EndState(name, {
-                text: 'This is the end state.',
+            return new FreeText(name, {
+                question: 'This is the first state.',
                 next: 'states:test2'
             });
         });
@@ -178,10 +181,50 @@ describe('MetricsHelper', function() {
 
         it('should trigger each time the state is entered', function() {
             return tester
-                .inputs(null, null)
+                .inputs(null, 'test', null)
                 .check(function(api, im, app) {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].entries;
+                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1, 1 ]});
+                })
+                .run();
+        });
+
+    });
+
+    describe('when the state is exited from', function() {
+
+        it('should trigger the state exit metric', function() {
+            return tester
+                .inputs(null, 'test')
+                .check(function(api, im, app) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].exits;
+                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1 ]});
+                })
+                .run();
+        });
+
+        it('should trigger both state exit metrics', function() {
+            return tester
+                .inputs(null, 'test')
+                .check(function(api, im, app) {
+                    metric1 = api.metrics
+                        .stores['metricsHelper-tester'].exits;
+                    metric2 = api.metrics
+                        .stores['metricsHelper-tester'].total_state_exits;
+                    assert.deepEqual(metric1, {agg: 'sum', values: [ 1 ]});
+                    assert.deepEqual(metric2, {agg: 'sum', values: [ 1 ]});
+                })
+                .run();
+        });
+
+        it('should trigger each time the state is exited', function() {
+            return tester
+                .inputs(null, 'test', null, 'test')
+                .check(function(api, im, app) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].exits;
                     assert.deepEqual(metrics, {agg: 'sum', values: [ 1, 1 ]});
                 })
                 .run();
