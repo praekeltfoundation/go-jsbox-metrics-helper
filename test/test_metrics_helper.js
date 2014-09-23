@@ -14,15 +14,6 @@ describe('MetricsHelper', function() {
         app = new App('states:test');
         tester = new AppTester(app);
 
-        app.init = function() {
-            metricsH = new MetricsHelper(app.im);
-            metricsH
-                .add.total_unique_users('uniqueUsers')
-                .add.total_unique_users()
-                .add.total_sessions('sessions')
-                .add.total_sessions();
-       };
-
         app.states.add('states:test', function(name) {
             return new EndState(name, {
                 text: 'This is the end state.'
@@ -36,6 +27,15 @@ describe('MetricsHelper', function() {
     });
 
     describe('When a new user accesses the service', function() {
+
+        beforeEach(function() {
+            app.init = function() {
+                metricsH = new MetricsHelper(app.im);
+                metricsH
+                    .add.total_unique_users('uniqueUsers')
+                    .add.total_unique_users();
+            };
+        });
 
         it('should fire the new user metrics', function() {
             return tester
@@ -81,7 +81,7 @@ describe('MetricsHelper', function() {
                 .start()
                 .check(function(api, im , app) {
                     metrics = api.metrics.stores['metricsHelper-tester'];
-                    assert.equal(metrics.uniqueUsers, undefined);
+                    assert.equal(metrics, undefined);
                 })
                 .run();
         });
@@ -89,6 +89,15 @@ describe('MetricsHelper', function() {
     });
 
     describe('when a new session is started', function() {
+
+        beforeEach(function() {
+            app.init = function() {
+                metricsH = new MetricsHelper(app.im);
+                metricsH
+                    .add.total_sessions('sessions')
+                    .add.total_sessions();
+            };
+        });
 
         it('should fire the sessions metric', function() {
             return tester
@@ -131,7 +140,7 @@ describe('MetricsHelper', function() {
                 .input('resume')
                 .check(function(api, im, app) {
                     metrics = api.metrics.stores['metricsHelper-tester'];
-                    assert.equal(metrics.sessions, undefined);
+                    assert.equal(metrics, undefined);
                 })
                 .run();
         });
