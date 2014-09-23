@@ -70,16 +70,13 @@ describe('MetricsHelper', function() {
                 .run();
         });
 
-        it('should fire the metrics for each new user', function() {
+        it('should not fire the metrics for existing users', function() {
             return tester
-                .inputs(
-                    {from_addr: '+271234', content: null},
-                    {from_addr: '+274321', content: null})
+                .setup.user({addr: '+271234', state:'states:test'})
+                .start()
                 .check(function(api, im , app) {
-                    metrics = api.metrics
-                        .stores['metricsHelper-tester'].uniqueUsers;
-                    assert.deepEqual(
-                        metrics, {agg: 'sum', values: [1, 1]});
+                    metrics = api.metrics.stores;
+                    assert.deepEqual(metrics, []);
                 })
                 .run();
         });
