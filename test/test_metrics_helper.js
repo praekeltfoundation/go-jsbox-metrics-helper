@@ -105,7 +105,7 @@ describe('MetricsHelper', function() {
                 .check(function(api, im , app) {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].sessions;
-                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1 ]});
+                    assert.deepEqual(metrics, {agg: 'last', values: [ 1 ]});
                 })
                 .run();
         });
@@ -118,8 +118,8 @@ describe('MetricsHelper', function() {
                         .stores['metricsHelper-tester'].sessions;
                     metric2 = api.metrics
                         .stores['metricsHelper-tester'].total_sessions;
-                    assert.deepEqual(metric1, {agg: 'sum', values: [ 1 ]});
-                    assert.deepEqual(metric2, {agg: 'sum', values: [ 1 ]});
+                    assert.deepEqual(metric1, {agg: 'last', values: [ 1 ]});
+                    assert.deepEqual(metric2, {agg: 'last', values: [ 1 ]});
                 })
                 .run();
         });
@@ -130,7 +130,7 @@ describe('MetricsHelper', function() {
                 .check(function(api, im, app) {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].sessions;
-                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1, 1 ]});
+                    assert.deepEqual(metrics, {agg: 'last', values: [ 1, 2 ]});
                 })
                 .run();
         });
