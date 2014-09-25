@@ -254,4 +254,64 @@ describe('MetricsHelper', function() {
 
     });
 
+     describe('when there is a sessions_until_state metric', function() {
+
+        beforeEach(function() {
+            app.init = function() {
+                metricsH = new MetricsHelper(app.im);
+                metricsH
+                    .add.sessions_until_state('states:test2', 'sessions_until')
+                    .add.sessions_until_state('states:test2');
+            };
+        });
+
+        it('should trigger the metric on entering the state', function() {
+            return tester
+                .inputs(null, 'test')
+                .check(function(api, im, app) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].sessions_until;
+                    assert.deepEqual(metrics, {agg: 'avg', values: [ 1 ]});
+                })
+                .run();
+        });
+
+        it('should trigger both metrics', function() {
+            return tester
+                .inputs(null, 'test')
+                .check(function(api, im, app) {
+                    metric1 = api.metrics
+                        .stores['metricsHelper-tester'].sessions_until;
+                    metric2 = api.metrics
+                        .stores['metricsHelper-tester'].sessions_until_state;
+                    assert.deepEqual(metric1, {agg: 'avg', values: [ 1 ]});
+                    assert.deepEqual(metric2, {agg: 'avg', values: [ 1 ]});
+                })
+                .run();
+        });
+
+        it('should trigger each time the state is reached', function() {
+            return tester
+                .inputs(null, 'test', null, 'test')
+                .check(function(api, im, app) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].sessions_until;
+                    assert.deepEqual(metrics, {agg: 'avg', values: [ 1, 1 ]});
+                })
+                .run();
+        });
+
+        it('should count multiple sessions', function() {
+            return tester
+                .inputs(null, null, null, 'test', null, 'test')
+                .check(function(api, im, app) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].sessions_until;
+                    assert.deepEqual(metrics, {agg: 'avg', values: [ 3, 1 ]});
+                })
+                .run();
+        });
+
+    });
+
 });
