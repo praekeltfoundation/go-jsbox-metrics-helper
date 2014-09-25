@@ -156,63 +156,15 @@ describe('MetricsHelper', function() {
 
     });
 
-    describe('when the state is entered', function() {
+    describe('when the state action is triggered', function() {
 
         beforeEach(function() {
             app.init = function() {
                 metricsH = new MetricsHelper(app.im);
                 metricsH
-                    .add.total_state_entries('states:test', 'entries')
-                    .add.total_state_entries('states:test');
-            };
-        });
-
-        it('should trigger the state enter metric', function() {
-            return tester
-                .start()
-                .check(function(api, im, app) {
-                    metrics = api.metrics
-                        .stores['metricsHelper-tester'].entries;
-                    assert.deepEqual(metrics, {agg: 'last', values: [ 1 ]});
-                })
-                .run();
-        });
-
-        it('should trigger both state enter metrics', function() {
-            return tester
-                .start()
-                .check(function(api, im, app) {
-                    metric1 = api.metrics
-                        .stores['metricsHelper-tester'].entries;
-                    metric2 = api.metrics
-                        .stores['metricsHelper-tester'].total_state_entries;
-                    assert.deepEqual(metric1, {agg: 'last', values: [ 1 ]});
-                    assert.deepEqual(metric2, {agg: 'last', values: [ 1 ]});
-                })
-                .run();
-        });
-
-        it('should trigger each time the state is entered', function() {
-            return tester
-                .inputs(null, 'test', null)
-                .check(function(api, im, app) {
-                    metrics = api.metrics
-                        .stores['metricsHelper-tester'].entries;
-                    assert.deepEqual(metrics, {agg: 'last', values: [ 1, 2 ]});
-                })
-                .run();
-        });
-
-    });
-
-    describe('when the state is exited from', function() {
-
-        beforeEach(function() {
-            app.init = function() {
-                metricsH = new MetricsHelper(app.im);
-                metricsH
-                    .add.total_state_exits('states:test', 'exits')
-                    .add.total_state_exits('states:test');
+                    .add.total_state_actions(
+                        {state:'states:test', action:'exit'}, 'exits')
+                    .add.total_state_actions({state:'states:test'});
             };
         });
 
@@ -227,29 +179,34 @@ describe('MetricsHelper', function() {
                 .run();
         });
 
-        it('should trigger both state exit metrics', function() {
+        it('should trigger the state enter metric', function() {
             return tester
-                .inputs(null, 'test')
+                .start()
                 .check(function(api, im, app) {
-                    metric1 = api.metrics
-                        .stores['metricsHelper-tester'].exits;
-                    metric2 = api.metrics
-                        .stores['metricsHelper-tester'].total_state_exits;
+                    metric1 = api.metrics.stores['metricsHelper-tester']
+                        .total_action_enter_states_test;
                     assert.deepEqual(metric1, {agg: 'last', values: [ 1 ]});
-                    assert.deepEqual(metric2, {agg: 'last', values: [ 1 ]});
                 })
                 .run();
         });
 
-        it('should trigger each time the state is exited', function() {
+        it('should trigger each time the state is entered', function() {
             return tester
-                .inputs(null, 'test', null, 'test')
+                .inputs(null, 'test', null)
                 .check(function(api, im, app) {
-                    metrics = api.metrics
-                        .stores['metricsHelper-tester'].exits;
+                    metrics = api.metrics.stores['metricsHelper-tester']
+                        .total_action_enter_states_test;
                     assert.deepEqual(metrics, {agg: 'last', values: [ 1, 2 ]});
                 })
                 .run();
+        });
+
+        it('should throw an exception on bad state actions', function() {
+            assert.throws( function() {
+                metricsH.add.total_state_actions(
+                    {state:'states:test', action:'foo'}, 'bad');},
+                /^(Invalid state action foo)$/
+                );
         });
 
     });
