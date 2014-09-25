@@ -164,9 +164,7 @@ describe('MetricsHelper', function() {
                 metricsH
                     .add.total_state_actions(
                         {state:'states:test', action:'exit'}, 'exits')
-                    .add.total_state_actions({state:'states:test'})
-                    .add.total_state_actions(
-                        {state:'states:test', action:'foo'}, 'bad');
+                    .add.total_state_actions({state:'states:test'});
             };
         });
 
@@ -181,15 +179,13 @@ describe('MetricsHelper', function() {
                 .run();
         });
 
-        it('should trigger all state enter metrics', function() {
+        it('should trigger the state enter metric', function() {
             return tester
                 .start()
                 .check(function(api, im, app) {
                     metric1 = api.metrics.stores['metricsHelper-tester']
                         .total_action_enter_states_test;
-                    metric2 = api.metrics.stores['metricsHelper-tester'].bad;
                     assert.deepEqual(metric1, {agg: 'last', values: [ 1 ]});
-                    assert.deepEqual(metric2, {agg: 'last', values: [ 1 ]});
                 })
                 .run();
         });
@@ -203,6 +199,14 @@ describe('MetricsHelper', function() {
                     assert.deepEqual(metrics, {agg: 'last', values: [ 1, 2 ]});
                 })
                 .run();
+        });
+
+        it('should throw an exception on bad state actions', function() {
+            assert.throws( function() {
+                metricsH.add.total_state_actions(
+                    {state:'states:test', action:'foo'}, 'bad');},
+                /^(Invalid state action foo)$/
+                );
         });
 
     });
