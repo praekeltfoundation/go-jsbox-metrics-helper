@@ -2,6 +2,7 @@ var vumigo = require('vumigo_v02');
 var App = vumigo.App;
 var AppTester = vumigo.AppTester;
 var EndState = vumigo.states.EndState;
+var FreeText = vumigo.states.FreeText;
 var MetricsHelper = require('../lib');
 var assert = require('assert');
 
@@ -15,8 +16,16 @@ describe('MetricsHelper', function() {
         tester = new AppTester(app);
 
         app.states.add('states:test', function(name) {
+            return new FreeText(name, {
+                question: 'This is the first state.',
+                next: 'states:test2'
+            });
+        });
+
+        app.states.add('states:test2', function(name) {
             return new EndState(name, {
-                text: 'This is the end state.'
+                text: 'This is the end state.',
+                next: 'states:test'
             });
         });
 
@@ -143,6 +152,61 @@ describe('MetricsHelper', function() {
                     assert.equal(metrics, undefined);
                 })
                 .run();
+        });
+
+    });
+
+    describe('when the state action is triggered', function() {
+
+        beforeEach(function() {
+            app.init = function() {
+                metricsH = new MetricsHelper(app.im);
+                metricsH
+                    .add.total_state_actions(
+                        {state:'states:test', action:'exit'}, 'exits')
+                    .add.total_state_actions({state:'states:test'});
+            };
+        });
+
+        it('should trigger the state exit metric', function() {
+            return tester
+                .inputs(null, 'test')
+                .check(function(api, im, app) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].exits;
+                    assert.deepEqual(metrics, {agg: 'last', values: [ 1 ]});
+                })
+                .run();
+        });
+
+        it('should trigger the state enter metric', function() {
+            return tester
+                .start()
+                .check(function(api, im, app) {
+                    metric1 = api.metrics.stores['metricsHelper-tester']
+                        .total_action_enter_states_test;
+                    assert.deepEqual(metric1, {agg: 'last', values: [ 1 ]});
+                })
+                .run();
+        });
+
+        it('should trigger each time the state is entered', function() {
+            return tester
+                .inputs(null, 'test', null)
+                .check(function(api, im, app) {
+                    metrics = api.metrics.stores['metricsHelper-tester']
+                        .total_action_enter_states_test;
+                    assert.deepEqual(metrics, {agg: 'last', values: [ 1, 2 ]});
+                })
+                .run();
+        });
+
+        it('should throw an exception on bad state actions', function() {
+            assert.throws( function() {
+                metricsH.add.total_state_actions(
+                    {state:'states:test', action:'foo'}, 'bad');},
+                /^(Invalid state action foo)$/
+                );
         });
 
     });
