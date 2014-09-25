@@ -217,8 +217,10 @@ describe('MetricsHelper', function() {
             app.init = function() {
                 metricsH = new MetricsHelper(app.im);
                 metricsH
-                    .add.sessions_until_state('states:test2', 'sessions_until')
-                    .add.sessions_until_state('states:test2');
+                    .add.sessions_until_state(
+                        {state: 'states:test2', action: 'enter'},
+                        'sessions_until')
+                    .add.sessions_until_state({state: 'states:test2'});
             };
         });
 
@@ -239,8 +241,8 @@ describe('MetricsHelper', function() {
                 .check(function(api, im, app) {
                     metric1 = api.metrics
                         .stores['metricsHelper-tester'].sessions_until;
-                    metric2 = api.metrics
-                        .stores['metricsHelper-tester'].sessions_until_state;
+                    metric2 = api.metrics.stores['metricsHelper-tester']
+                        .total_action_enter_states_test2;
                     assert.deepEqual(metric1, {agg: 'avg', values: [ 1 ]});
                     assert.deepEqual(metric2, {agg: 'avg', values: [ 1 ]});
                 })
