@@ -242,7 +242,7 @@ describe('MetricsHelper', function() {
                     metric1 = api.metrics
                         .stores['metricsHelper-tester'].sessions_until;
                     metric2 = api.metrics.stores['metricsHelper-tester']
-                        .total_action_enter_states_test2;
+                        .sessions_until_enter_states_test2;
                     assert.deepEqual(metric1, {agg: 'avg', values: [ 1 ]});
                     assert.deepEqual(metric2, {agg: 'avg', values: [ 1 ]});
                 })
