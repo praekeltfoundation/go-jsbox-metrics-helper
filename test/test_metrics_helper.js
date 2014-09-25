@@ -273,4 +273,29 @@ describe('MetricsHelper', function() {
 
     });
 
+    describe('when there is a time_between_states metric', function() {
+        beforeEach(function() {
+            app.init = function() {
+                metricsH = new MetricsHelper(app.im);
+                metricsH
+                    .add.time_between_states(
+                        {state: 'states:test', action: 'enter'},
+                        {state: 'states:test2', action: 'exit'},
+                        'time_between')
+                    .add.time_between_states(
+                        {state: 'states:test'},
+                        {state: 'states:test2'});
+            };
+        });
+
+        it('should fire the metric when the to state is reached', function() {
+            return tester
+                .inputs(null, 'test', null)
+                .check(function(api) {
+
+                })
+                .run();
+        });
+    });
+
 });
