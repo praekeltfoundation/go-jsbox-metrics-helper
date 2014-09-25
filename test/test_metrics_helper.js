@@ -173,7 +173,7 @@ describe('MetricsHelper', function() {
                 .check(function(api, im, app) {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].entries;
-                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1 ]});
+                    assert.deepEqual(metrics, {agg: 'last', values: [ 1 ]});
                 })
                 .run();
         });
@@ -186,8 +186,8 @@ describe('MetricsHelper', function() {
                         .stores['metricsHelper-tester'].entries;
                     metric2 = api.metrics
                         .stores['metricsHelper-tester'].total_state_entries;
-                    assert.deepEqual(metric1, {agg: 'sum', values: [ 1 ]});
-                    assert.deepEqual(metric2, {agg: 'sum', values: [ 1 ]});
+                    assert.deepEqual(metric1, {agg: 'last', values: [ 1 ]});
+                    assert.deepEqual(metric2, {agg: 'last', values: [ 1 ]});
                 })
                 .run();
         });
@@ -198,7 +198,7 @@ describe('MetricsHelper', function() {
                 .check(function(api, im, app) {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].entries;
-                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1, 1 ]});
+                    assert.deepEqual(metrics, {agg: 'last', values: [ 1, 2 ]});
                 })
                 .run();
         });
@@ -222,7 +222,7 @@ describe('MetricsHelper', function() {
                 .check(function(api, im, app) {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].exits;
-                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1 ]});
+                    assert.deepEqual(metrics, {agg: 'last', values: [ 1 ]});
                 })
                 .run();
         });
@@ -235,8 +235,8 @@ describe('MetricsHelper', function() {
                         .stores['metricsHelper-tester'].exits;
                     metric2 = api.metrics
                         .stores['metricsHelper-tester'].total_state_exits;
-                    assert.deepEqual(metric1, {agg: 'sum', values: [ 1 ]});
-                    assert.deepEqual(metric2, {agg: 'sum', values: [ 1 ]});
+                    assert.deepEqual(metric1, {agg: 'last', values: [ 1 ]});
+                    assert.deepEqual(metric2, {agg: 'last', values: [ 1 ]});
                 })
                 .run();
         });
@@ -247,7 +247,7 @@ describe('MetricsHelper', function() {
                 .check(function(api, im, app) {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].exits;
-                    assert.deepEqual(metrics, {agg: 'sum', values: [ 1, 1 ]});
+                    assert.deepEqual(metrics, {agg: 'last', values: [ 1, 2 ]});
                 })
                 .run();
         });
