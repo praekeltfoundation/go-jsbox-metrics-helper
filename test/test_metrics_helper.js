@@ -5,6 +5,7 @@ var EndState = vumigo.states.EndState;
 var FreeText = vumigo.states.FreeText;
 var MetricsHelper = require('../lib');
 var assert = require('assert');
+var InvalidStateActionError = MetricsHelper.InvalidStateActionError;
 
 describe('MetricsHelper', function() {
     var app;
@@ -205,8 +206,8 @@ describe('MetricsHelper', function() {
             assert.throws( function() {
                 metricsH.add.total_state_actions(
                     {state:'states:test', action:'foo'}, 'bad');},
-                /^(Invalid state action foo)$/
-                );
+                InvalidStateActionError
+            );
         });
 
     });
