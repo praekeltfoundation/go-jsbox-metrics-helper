@@ -52,7 +52,10 @@ describe('MetricsHelper', function() {
                 .check(function(api, im , app) {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].uniqueUsers;
+                    metrics_trans = api.metrics.stores['metricsHelper-tester']
+                        ['uniqueUsers.transient'];
                     assert.deepEqual(metrics, {agg: 'last', values: [ 1 ]});
+                    assert.deepEqual(metrics_trans, {agg: 'sum', values: [1]});
                 })
                 .run();
         });
@@ -114,7 +117,10 @@ describe('MetricsHelper', function() {
                 .check(function(api, im , app) {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].sessions;
+                    metrics_trans = api.metrics.stores['metricsHelper-tester']
+                        ['sessions.transient'];
                     assert.deepEqual(metrics, {agg: 'last', values: [ 1 ]});
+                    assert.deepEqual(metrics_trans, {agg: 'sum', values: [1]});
                 })
                 .run();
         });
@@ -174,7 +180,10 @@ describe('MetricsHelper', function() {
                 .check(function(api, im, app) {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].exits;
+                    metrics_trans = api.metrics.stores['metricsHelper-tester']
+                        ['exits.transient'];
                     assert.deepEqual(metrics, {agg: 'last', values: [ 1 ]});
+                    assert.deepEqual(metrics_trans, {agg: 'sum', values: [1]});
                 })
                 .run();
         });
