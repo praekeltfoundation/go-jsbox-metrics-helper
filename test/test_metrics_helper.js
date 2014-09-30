@@ -346,4 +346,70 @@ describe('MetricsHelper', function() {
 
     });
 
+    describe('the tracker function', function() {
+        beforeEach(function() {
+            app.init = function() {
+                metricsH = new MetricsHelper(app.im);
+                metricsH
+                    .add.tracker(
+                        { state: 'states:test', action: 'enter'},
+                        { state: 'states:test2', action: 'exit'},
+                        { time_between_states: 'time_between' });
+            };
+        });
+
+        it('should add a time_between_states metric', function() {
+            return tester
+                .inputs(null, 'test', null)
+                .check(function(api) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].time_between;
+                    assert.equal(metrics.agg, 'avg');
+                    assert.equal(metrics.values.length, 1);
+                    assert.equal(typeof metrics.values[0], 'number');
+                })
+                .run();
+        });
+    });
+
+    describe('the trigger function', function() {
+        beforeEach(function() {
+            app.init = function() {
+                metricsH = new MetricsHelper(app.im);
+                metricsH
+                    .add.trigger(
+                        { state: 'states:test2', action: 'enter'},
+                        {
+                            sessions_until_state: 'sessions_until',
+                            total_state_actions: 'total_entries'
+                        });
+            };
+        });
+
+        it('should add the sessions_until_state metric', function() {
+            return tester
+                .inputs(null, 'test')
+                .check(function(api, im, app) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].sessions_until;
+                    assert.deepEqual(metrics, {agg: 'avg', values: [ 1 ]});
+                })
+                .run();
+        });
+
+        it('should add the total_state_actions metric', function() {
+            return tester
+                .inputs(null, 'test')
+                .check(function(api, im, app) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].total_entries;
+                    metrics_trans = api.metrics.stores['metricsHelper-tester']
+                        ['total_entries.transient'];
+                    assert.deepEqual(metrics, {agg: 'last', values: [ 1 ]});
+                    assert.deepEqual(metrics_trans, {agg: 'sum', values: [1]});
+                })
+                .run();
+        });
+    });
+
 });
