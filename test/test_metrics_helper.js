@@ -211,11 +211,18 @@ describe('MetricsHelper', function() {
         });
 
         it('should throw an exception on bad state actions', function() {
-            assert.throws( function() {
-                metricsH.add.total_state_actions(
-                    {state:'states:test', action:'foo'}, 'bad');},
-                /^(Invalid state action foo)$/
-                );
+            assert.throws(
+                function() {
+                    metricsH.add.total_state_actions(
+                        {state:'states:test', action:'foo'}, 'bad');
+                },
+                function(err) {
+                    if( err.name === 'InvalidStateActionError'
+                            && /Invalid state action: foo/.test(err) ) {
+                        return true;
+                    }
+                }
+            );
         });
 
     });
