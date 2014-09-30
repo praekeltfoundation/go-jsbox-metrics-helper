@@ -378,7 +378,7 @@ describe('MetricsHelper', function() {
                 metricsH = new MetricsHelper(app.im);
                 metricsH
                     .add.trigger(
-                        { enter: 'states:test2'},
+                        { state: 'states:test2', action: 'enter'},
                         {
                             sessions_until_state: 'sessions_until',
                             total_state_actions: 'total_entries'
