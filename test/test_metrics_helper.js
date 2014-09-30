@@ -352,7 +352,8 @@ describe('MetricsHelper', function() {
                 metricsH = new MetricsHelper(app.im);
                 metricsH
                     .add.tracker(
-                        { enter: 'states:test'}, { exit: 'states:test2'},
+                        { state: 'states:test', action: 'enter'},
+                        { state: 'states:test2', action: 'exit'},
                         { time_between_states: 'time_between' });
             };
         });
