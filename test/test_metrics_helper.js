@@ -282,4 +282,61 @@ describe('MetricsHelper', function() {
 
     });
 
+    describe('when there is a time_between_states metric', function() {
+        beforeEach(function() {
+            app.init = function() {
+                metricsH = new MetricsHelper(app.im);
+                metricsH
+                    .add.time_between_states(
+                        {state: 'states:test', action: 'enter'},
+                        {state: 'states:test2', action: 'exit'},
+                        'time_between')
+                    .add.time_between_states(
+                        {state: 'states:test'},
+                        {state: 'states:test2'});
+            };
+        });
+
+        it('should fire the metric when the to state is reached', function() {
+            return tester
+                .inputs(null, 'test', null)
+                .check(function(api) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].time_between;
+                    assert.equal(metrics.agg, 'avg');
+                    assert.equal(metrics.values.length, 1);
+                    assert.equal(typeof metrics.values[0], 'number');
+                })
+                .run();
+        });
+
+        it('should trigger both metrics', function() {
+            return tester
+                .inputs(null, 'test')
+                .check(function(api) {
+                    metrics = api.metrics.stores['metricsHelper-tester']
+                        .time_between_enter_states_test_enter_states_test2;
+                    assert.equal(metrics.agg, 'avg');
+                    assert.equal(metrics.values.length, 1);
+                    assert.equal(typeof metrics.values[0], 'number');
+                })
+                .run();
+        });
+
+        it('should fire the metric for every event', function() {
+            return tester
+                .inputs(null, 'test', null, 'test', null)
+                .check(function(api) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].time_between;
+                    assert.equal(metrics.agg, 'avg');
+                    assert.equal(metrics.values.length, 2);
+                    assert.equal(typeof metrics.values[0], 'number');
+                    assert.equal(typeof metrics.values[1], 'number');
+                })
+                .run();
+        });
+
+    });
+
 });
