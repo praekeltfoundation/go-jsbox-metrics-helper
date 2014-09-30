@@ -339,4 +339,29 @@ describe('MetricsHelper', function() {
 
     });
 
+    describe('the tracker function', function() {
+        beforeEach(function() {
+            app.init = function() {
+                metricsH = new MetricsHelper(app.im);
+                metricsH
+                    .add.tracker(
+                        { enter: 'states:test'}, { exit: 'states:test2'},
+                        { time_between_states: 'time_between' });
+            };
+        });
+
+        it('should add a time_between_states metric', function() {
+            return tester
+                .inputs(null, 'test', null)
+                .check(function(api) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].time_between;
+                    assert.equal(metrics.agg, 'avg');
+                    assert.equal(metrics.values.length, 1);
+                    assert.equal(typeof metrics.values[0], 'number');
+                })
+                .run();
+        });
+    });
+
 });
