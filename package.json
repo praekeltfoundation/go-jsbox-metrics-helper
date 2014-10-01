@@ -1,6 +1,6 @@
 {
   "name": "go-jsbox-metrics-helper",
-  "version": "0.0.0a",
+  "version": "0.1.0",
   "description": "Metrics helper for Vumi JS Sandbox apps",
   "main": "lib/index.js",
   "scripts": {
