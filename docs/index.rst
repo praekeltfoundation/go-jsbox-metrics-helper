@@ -11,7 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-
+   metricshelper
 
 Indices and tables
 ==================
