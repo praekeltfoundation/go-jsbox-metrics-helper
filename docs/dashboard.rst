@@ -62,20 +62,24 @@ applied to this sample Vumi Go JavaScript Sandbox application:
         });
     });
 
-Total Unique Users
-------------------
-For the function :func:`total_unique_users`, the following is an example of
-using the function to add metrics to the basic function:
+Total Unique Users and Sessions
+-------------------------------
+For the functions :func:`total_unique_users` and func:`total_sessions`, the following is an example of using the functions to add metrics to the basic
+application:
 
 .. code-block:: javascript
 
     new MetricsHelper(self.im)
-        .add.total_unique_users('unique_users');
+        .add.total_unique_users('unique_users')
+        .add.total_sessions('total_sessions');
 
-This will add two new metrics; `unique_users`, a metric with a `last`
+This will add four new metrics; `unique_users`, a metric with a `last`
 aggregation method that contains the current sum of unique users, and
 `unique_users.transient`, a metric with the `sum` aggregration method that is
-fired every time a new unique user accesses the service.
+fired every time a new unique user accesses the service, `total_sessions` a
+metric withthe `last` aggregration method which will contain the total amount
+of sessions, and `total_sessions.transient`, which is a metric with the `sum`
+aggregation method which fires everytime a new session is started.
 
 The following is an example for use of these metrics in the Vumi Go Dashboard:
 
@@ -94,7 +98,7 @@ The following is an example for use of these metrics in the Vumi Go Dashboard:
     },
     {
         "type": "diamondash.widgets.graph.GraphWidget",
-        "name": "Total new unique users over the past 30 days",
+        "name": "Total sessions over the past 30 days",
         "width": 12,
         "time_range": "30d",
         "bucket_size": "1d",
@@ -104,7 +108,7 @@ The following is an example for use of these metrics in the Vumi Go Dashboard:
                 "target": {
                     "metric_type": "account",
                     "store": "teaorcoffee",
-                    "name": "unique_users.transient",
+                    "name": "total_sessions.transient",
                     "aggregator": "sum"
                 }
             }
@@ -114,7 +118,7 @@ The following is an example for use of these metrics in the Vumi Go Dashboard:
 The first widget will produce a text block with the total unique users over all
 time, with a comparison to the value from one day ago.
 
-The second widget will produce a line graph, showing the total unique users per
+The second widget will produce a line graph, showing the total new sessions per
 day for the last 30 days.
 
 .. _`Vumi Go Dashboard documentation`: http://vumi-go.readthedocs.org/en/latest/dashboards.html
