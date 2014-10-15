@@ -64,7 +64,8 @@ applied to this sample Vumi Go JavaScript Sandbox application:
 
 Total Unique Users and Sessions
 -------------------------------
-For the functions :func:`total_unique_users` and func:`total_sessions`, the following is an example of using the functions to add metrics to the basic
+For the functions :func:`total_unique_users` and func:`total_sessions`, the 
+following is an example of using the functions to add metrics to the basic
 application:
 
 .. code-block:: javascript
@@ -120,5 +121,84 @@ time, with a comparison to the value from one day ago.
 
 The second widget will produce a line graph, showing the total new sessions per
 day for the last 30 days.
+
+Total State Actions and Sessions Until State
+--------------------------------------------
+The functions :func:`total_state_actions` and :func:`sessions_until_state` are
+best invoked using the :func:`trigger` function. The following is an example of
+using this function to add metrics to the basic application:
+
+.. code-block:: javascript
+
+    new MetricsHelper(self.im)
+        .add.trigger({
+            action: 'enter',
+            state: 'states:tea'
+        }, {
+            total_state_actions: 'total_tea',
+            sessions_until_state: 'sessions_per_tea'
+        })
+
+This will add three new metrics; `total_tea`, a metric with a `last`
+aggregation method that contains the total amount of `enter` events on the
+`states:tea` state; `total_tea.transient`, a metric with a `sum` aggregation
+method that is fired every time the `enter` event on the `states:tea` state
+is triggered; and `sessions_per_tea`, a metric with an `avg` aggregation
+method, which is triggered every time the `enter` event of the `states:tea`
+state is triggered, and contains the number of sessions taken to get to that
+event.
+
+The following is an example of using these metrics in a Vumi Go Dashboard:
+
+.. code-block:: javascript
+
+    {
+        "type": "diamondash.widgets.lvalue.LValueWidget",
+        "time_range": "1d",
+        "name": "Total tea drinkers",
+        "target": {
+            "metric_type": "account",
+            "store": "teaorcoffee",
+            "name": "total_tea",
+            "aggregator": "last"
+        }
+    },
+    {
+        "type": "diamondash.widgets.lvalue.LValueWidget",
+        "time_range": "1d",
+        "name": "Average sessions until tea is chosen",
+        "target": {
+            "metric_type": "account",
+            "store": "teaorcoffee",
+            "name": "sessions_per_tea",
+            "aggregator": "avg"
+        }
+    },
+    {
+        "type": "diamondash.widgets.graph.GraphWidget",
+        "name": "Weekly tea consumption for the last 30 days",
+        "width": 12,
+        "time_range": "30d",
+        "bucket_size": "7d",
+        "metrics": [{
+            "name": "Tea",
+            "target": {
+                "metric_type": "account",
+                "store": "teaorcoffee",
+                "name": "total_tea.transient",
+                "aggregator": "sum"
+            }
+        }]
+    }
+
+The first widget will create a text block showing the total amount of tea
+drinkers, with a comparison to the total amount of tea drinkers from one day
+ago.
+
+The second widget will show the average amount of sessions taken to get to
+the tea state, with a comparison to the amount from one day ago.
+
+The last widget is a line graph that shows the amount of tea drinkers, grouped
+by week, over the last 30 days.
 
 .. _`Vumi Go Dashboard documentation`: http://vumi-go.readthedocs.org/en/latest/dashboards.html
