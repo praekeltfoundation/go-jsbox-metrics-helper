@@ -230,15 +230,22 @@ The following is an example of using this metric within the Vumi Go Dashboard:
 .. code-block:: javascript
 
     {
-        "type": "diamondash.widgets.lvalue.LValueWidget",
-        "time_range": "1d",
+        "type": "diamondash.widgets.graph.GraphWidget",
         "name": "Average time taken to choose coffee",
-        "target": {
-            "metric_type": "account",
-            "store": "teaorcoffee",
-            "name": "time_between_start_and_coffee",
-            "aggregator": "avg"
-        }
+        "time_range": "30d",
+        "bucket_size": "7d",
+        "metrics": [{
+            "name": "Coffee",
+            "target": {
+                "metric_type": "account",
+                "store": "teaorcoffee",
+                "name": "time_between_start_and_coffee",
+                "aggregator": "avg"
+            }
+        }]
     }
+
+This will create a graph widget which shows the average time taken to choose
+coffee per week, for the last 30 days.
 
 .. _`Vumi Go Dashboard documentation`: http://vumi-go.readthedocs.org/en/latest/dashboards.html
