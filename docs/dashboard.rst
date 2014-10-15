@@ -76,11 +76,11 @@ application:
 
 This will add four new metrics; `unique_users`, a metric with a `last`
 aggregation method that contains the current sum of unique users, and
-`unique_users.transient`, a metric with the `sum` aggregration method that is
+`unique_users.transient`, a metric with the `sum` aggregation method that is
 fired every time a new unique user accesses the service, `total_sessions` a
-metric withthe `last` aggregration method which will contain the total amount
+metric with the `last` aggregation method which will contain the total amount
 of sessions, and `total_sessions.transient`, which is a metric with the `sum`
-aggregation method which fires everytime a new session is started.
+aggregation method which fires every time a new session is started.
 
 The following is an example for use of these metrics in the Vumi Go Dashboard:
 
