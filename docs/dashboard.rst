@@ -64,7 +64,7 @@ applied to this sample Vumi Go JavaScript Sandbox application:
 
 Total Unique Users and Sessions
 -------------------------------
-For the functions :func:`total_unique_users` and func:`total_sessions`, the 
+For the functions :func:`total_unique_users` and func:`total_sessions`, the
 following is an example of using the functions to add metrics to the basic
 application:
 
@@ -200,5 +200,45 @@ the tea state, with a comparison to the amount from one day ago.
 
 The last widget is a line graph that shows the amount of tea drinkers, grouped
 by week, over the last 30 days.
+
+Time Between States
+-------------------
+The function :func:`time_between_states` is best invoked using the
+:func:`tracker` function. The following is an example application within the
+basic application:
+
+.. code-block:: javascript
+
+    new MetricsHelper(self.im)
+        .add.tracker({
+            action: 'enter',
+            state: 'states:start'
+        }, {
+            action: 'enter',
+            state: 'states:coffee'
+        }, {
+            time_between_states: 'time_between_start_and_coffee'
+        })
+
+This will add one metric, `time_between_start_and_coffee`, with the aggregation
+method `avg`, which stores the average time in milliseconds taken to get from
+the `enter` event of the `states:start` state to the `enter` event of the
+`states:coffee` state.
+
+The following is an example of using this metric within the Vumi Go Dashboard:
+
+.. code-block:: javascript
+
+    {
+        "type": "diamondash.widgets.lvalue.LValueWidget",
+        "time_range": "1d",
+        "name": "Average time taken to choose coffee",
+        "target": {
+            "metric_type": "account",
+            "store": "teaorcoffee",
+            "name": "time_between_start_and_coffee",
+            "aggregator": "avg"
+        }
+    }
 
 .. _`Vumi Go Dashboard documentation`: http://vumi-go.readthedocs.org/en/latest/dashboards.html
