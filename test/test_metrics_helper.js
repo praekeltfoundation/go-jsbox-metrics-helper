@@ -412,7 +412,10 @@ describe('MetricsHelper', function() {
                     .add.tracker(
                         { state: 'states:test', action: 'enter'},
                         { state: 'states:test2', action: 'exit'},
-                        { time_between_states: 'time_between' });
+                        {
+                            time_between_states: 'time_between',
+                            sessions_between_states: 'sessions_between'
+                        });
             };
         });
 
@@ -425,6 +428,19 @@ describe('MetricsHelper', function() {
                     assert.equal(metrics.agg, 'avg');
                     assert.equal(metrics.values.length, 1);
                     assert.equal(typeof metrics.values[0], 'number');
+                })
+                .run();
+        });
+
+        it('should add a sessions_between_states metric', function() {
+            return tester
+                .inputs('test', null)
+                .check(function(api) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].sessions_between;
+                    assert.equal(metrics.agg, 'avg');
+                    assert.equal(metrics.values.length, 1);
+                    assert.equal(metrics.values[0], 1);
                 })
                 .run();
         });
