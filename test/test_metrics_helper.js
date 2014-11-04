@@ -368,7 +368,7 @@ describe('MetricsHelper', function() {
                     metrics = api.metrics
                         .stores['metricsHelper-tester'].sessions_between;
                     assert.equal(metrics.agg, 'avg');
-                    assert.equal(metrics.values[0], 2);
+                    assert.equal(metrics.values[0], 3);
                     assert.equal(typeof metrics.values[0], 'number');
                 })
                 .run();
@@ -382,7 +382,7 @@ describe('MetricsHelper', function() {
                         .sessions_between_enter_states_test_enter_states_test2;
                     assert.equal(metrics.agg, 'avg');
                     assert.equal(metrics.values.length, 1);
-                    assert.equal(metrics.values[0], 1);
+                    assert.equal(metrics.values[0], 2);
                 })
                 .run();
         });
@@ -395,8 +395,8 @@ describe('MetricsHelper', function() {
                         .stores['metricsHelper-tester'].sessions_between;
                     assert.equal(metrics.agg, 'avg');
                     assert.equal(metrics.values.length, 2);
-                    assert.equal(metrics.values[0], 1);
-                    assert.equal(metrics.values[1], 1);
+                    assert.equal(metrics.values[0], 2);
+                    assert.equal(metrics.values[1], 2);
                 })
                 .run();
         });
@@ -440,7 +440,7 @@ describe('MetricsHelper', function() {
                         .stores['metricsHelper-tester'].sessions_between;
                     assert.equal(metrics.agg, 'avg');
                     assert.equal(metrics.values.length, 1);
-                    assert.equal(metrics.values[0], 1);
+                    assert.equal(metrics.values[0], 2);
                 })
                 .run();
         });
