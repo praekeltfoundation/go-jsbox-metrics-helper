@@ -346,6 +346,64 @@ describe('MetricsHelper', function() {
 
     });
 
+    describe('when there is a sessions_between_states metric', function() {
+        beforeEach(function() {
+            app.init = function() {
+                metricsH = new MetricsHelper(app.im);
+                metricsH
+                    .add.sessions_between_states(
+                        {state: 'states:test', action: 'enter'},
+                        {state: 'states:test2', action: 'exit'},
+                        'sessions_between')
+                    .add.sessions_between_states(
+                        {state: 'states:test'},
+                        {state: 'states:test2'});
+            };
+        });
+
+        it('should fire the metric when the end state is reached', function() {
+            return tester
+                .inputs(null, 'test', null)
+                .check(function(api) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].sessions_between;
+                    assert.equal(metrics.agg, 'avg');
+                    assert.equal(metrics.values[0], 3);
+                    assert.equal(typeof metrics.values[0], 'number');
+                })
+                .run();
+        });
+
+        it('should trigger both metrics', function() {
+            return tester
+                .inputs(null, 'test')
+                .check(function(api) {
+                    metrics = api.metrics.stores['metricsHelper-tester']
+                        .sessions_between_enter_states_test_enter_states_test2;
+                    assert.equal(metrics.agg, 'avg');
+                    assert.equal(metrics.values.length, 1);
+                    assert.equal(metrics.values[0], 2);
+                })
+                .run();
+        });
+
+        it('should fire the metric for every event', function() {
+            return tester
+                .inputs('test', null, 'test', null)
+                .check(function(api) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].sessions_between;
+                    assert.equal(metrics.agg, 'avg');
+                    assert.equal(metrics.values.length, 2);
+                    assert.equal(metrics.values[0], 2);
+                    assert.equal(metrics.values[1], 2);
+                })
+                .run();
+        });
+
+    });
+
+
     describe('the tracker function', function() {
         beforeEach(function() {
             app.init = function() {
@@ -354,7 +412,10 @@ describe('MetricsHelper', function() {
                     .add.tracker(
                         { state: 'states:test', action: 'enter'},
                         { state: 'states:test2', action: 'exit'},
-                        { time_between_states: 'time_between' });
+                        {
+                            time_between_states: 'time_between',
+                            sessions_between_states: 'sessions_between'
+                        });
             };
         });
 
@@ -367,6 +428,19 @@ describe('MetricsHelper', function() {
                     assert.equal(metrics.agg, 'avg');
                     assert.equal(metrics.values.length, 1);
                     assert.equal(typeof metrics.values[0], 'number');
+                })
+                .run();
+        });
+
+        it('should add a sessions_between_states metric', function() {
+            return tester
+                .inputs('test', null)
+                .check(function(api) {
+                    metrics = api.metrics
+                        .stores['metricsHelper-tester'].sessions_between;
+                    assert.equal(metrics.agg, 'avg');
+                    assert.equal(metrics.values.length, 1);
+                    assert.equal(metrics.values[0], 2);
                 })
                 .run();
         });
